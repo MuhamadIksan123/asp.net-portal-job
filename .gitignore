@@ -1,11 +1,11 @@
-/RentOffice.sln
+/PortalJob.sln
 .vs/
 .vscode/
 /obj
 /bin
 appsettings.Development.json
 appsettings.json
-RentOffice.csproj
-RentOffice.csproj.user
-RentOffice.http
+PortalJob.csproj
+PortalJob.csproj.user
+PortalJob.http
 /Properties
