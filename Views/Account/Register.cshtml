@@ -1,0 +1,64 @@
+﻿@model dynamic
+@{
+}
+<h2>Register</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div style="color: red;">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+<form asp-action="Register" method="post">
+    <div>
+        <label>Username</label>
+        <input type="text" name="UserName" required />
+    </div>
+
+    <div>
+        <label>Avatar</label>
+        <input type="text" name="Avatar" required />
+    </div>
+
+    <div>
+        <label>Occupation</label>
+        <input type="text" name="Occupation" required />
+    </div>
+
+    <div>
+        <label>Experience</label>
+        <select name="Experience" required>
+            <option value="">Pilih Experience</option>
+            <option value="Junior">Junior</option>
+            <option value="Middle">Middle</option>
+            <option value="Senior">Senior</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Email</label>
+        <input type="email" name="Email" required />
+    </div>
+
+    <div>
+        <label>Password</label>
+        <input type="password" name="password" required />
+    </div>
+
+    <div>
+        <label>Role</label>
+        <select name="Role" required>
+            <option value="">Pilih Role</option>
+            <option value="Admin">Admin</option>
+            <option value="Manager">Manager</option>
+        </select>
+    </div>
+
+    <button type="submit">Register</button>
+</form>
