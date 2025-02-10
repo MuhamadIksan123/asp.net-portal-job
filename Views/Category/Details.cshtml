@@ -1,0 +1,30 @@
+@model PortalJob.Models.Category
+
+@{
+    ViewData["Title"] = "Category Detail";
+}
+
+<div class="container mx-auto mt-6">
+    <h1 class="text-2xl font-semibold">Category Details</h1>
+
+    <div class="mt-4">
+        <label class="block text-sm font-medium">Category Name</label>
+        <p class="text-gray-700">@Model.Name</p>
+    </div>
+
+    <div class="mt-4">
+        <label class="block text-sm font-medium">Category Icon</label>
+        @if (!string.IsNullOrEmpty(Model.Icon))
+        {
+            <img src="@Model.Icon" alt="@Model.Name" class="h-32 w-32 object-cover rounded mt-2">
+        }
+        else
+        {
+            <p class="text-gray-700 mt-2">No Icon Available</p>
+        }
+    </div>
+
+    <div class="mt-6">
+        <a href="@Url.Action("Index")" class="bg-gray-500 text-white py-2 px-4 rounded">Back to Categories</a>
+    </div>
+</div>

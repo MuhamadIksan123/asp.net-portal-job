@@ -1,22 +1,22 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalJob.Data;
 using PortalJob.Models;
 using PortalJob.Payload.Request;
+using PortalJob.Services;
 
 namespace PortalJob.Controllers
 {
-    [Authorize]
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IWebHostEnvironment _environment;
+        private readonly FileService _fileService;
 
-        public CategoryController(ApplicationDbContext context, IWebHostEnvironment environment)
+        public CategoryController(ApplicationDbContext context, FileService fileService)
         {
             _context = context;
-            _environment = environment;
+            _fileService = fileService;
         }
 
         public async Task<IActionResult> Index()
@@ -27,36 +27,31 @@ namespace PortalJob.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            return View(new CategoryRequest());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Store(CategoryRequest model)
+        public async Task<IActionResult> Store(CategoryRequest request)
         {
             if (ModelState.IsValid)
             {
                 var category = new Category
                 {
-                    Name = model.Name,
-                    Slug = model.Name.ToLower().Replace(" ", "-"),
+                    Name = request.Name,
+                    Slug = request.Name.ToLower().Replace(" ", "-"),
                 };
 
-                if (model.Icon != null)
+                if (request.IconFile != null)
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Icon.FileName);
-                    string filePath = Path.Combine(_environment.WebRootPath, "uploads/icons", fileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.Icon.CopyToAsync(fileStream);
-                    }
-                    category.Icon = "/uploads/icons/" + fileName;
+                    category.Icon = await _fileService.SaveFileAsync(request.IconFile, "icons");
                 }
 
                 _context.Categories.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View("Create", model);
+
+            return View("Create", request); // Pastikan model yang dikirim tetap CategoryStoreRequest
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -64,12 +59,18 @@ namespace PortalJob.Controllers
             var category = await _context.Categories.FindAsync(id);
             if (category == null) return NotFound();
 
-            var model = new Category
+            var model = new CategoryRequest
             {
-                Name = category.Name,
+                Name = category.Name
             };
-            return View(model);
+
+            ViewData["CategoryId"] = id;
+            ViewData["CurrentIcon"] = category.Icon; // Simpan ikon lama
+
+            return View(model); // Pastikan model yang dikembalikan adalah CategoryUpdateRequest
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Update(int id, CategoryRequest model)
@@ -77,33 +78,50 @@ namespace PortalJob.Controllers
             var category = await _context.Categories.FindAsync(id);
             if (category == null) return NotFound();
 
+            // Hapus validasi jika IconFile kosong
+            ModelState.Remove("IconFile");
+
             if (ModelState.IsValid)
             {
                 category.Name = model.Name;
                 category.Slug = model.Name.ToLower().Replace(" ", "-");
 
-                if (model.Icon != null)
+                // Cek apakah pengguna mengunggah ikon baru
+                if (model.IconFile != null)
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Icon.FileName);
-                    string filePath = Path.Combine(_environment.WebRootPath, "uploads/icons", fileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    // Hapus ikon lama jika ada
+                    if (!string.IsNullOrEmpty(category.Icon))
                     {
-                        await model.Icon.CopyToAsync(fileStream);
+                        await _fileService.DeleteFileAsync(category.Icon);
                     }
-                    category.Icon = "/uploads/icons/" + fileName;
+
+                    // Simpan ikon baru
+                    category.Icon = await _fileService.SaveFileAsync(model.IconFile, "icons");
                 }
 
                 _context.Categories.Update(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
+
+            ViewData["CategoryId"] = id;
+            ViewData["CurrentIcon"] = category.Icon; // Tetap kirim ikon lama jika ada error
             return View("Edit", model);
         }
+
+
+
 
         public async Task<IActionResult> Delete(int id)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null) return NotFound();
+
+            // Hapus file gambar terkait jika ada
+            if (!string.IsNullOrEmpty(category.Icon))
+            {
+                await _fileService.DeleteFileAsync(category.Icon);
+            }
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
