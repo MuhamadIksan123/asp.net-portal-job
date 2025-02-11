@@ -1,13 +1,25 @@
-﻿namespace PortalJob.Payload.Request
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PortalJob.Payload.Request
 {
     public class RegisterRequest
     {
-        public string UserName { get; set; }
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
+
+        [Required]
+        [MinLength(6)]
         public string Password { get; set; }
-        public string Role { get; set; }
-        public string Avatar { get; set; }
+
+        [Required]
+        public string FullName { get; set; }
+
+        [Required(ErrorMessage = "Avatar wajib diunggah.")]
+        public IFormFile AvatarFile { get; set; }
+
         public string Occupation { get; set; }
-        public string Experience { get; set; }
+
+        public int Experience { get; set; }
     }
 }

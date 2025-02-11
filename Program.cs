@@ -37,14 +37,17 @@ using (var scope = app.Services.CreateScope())
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-    // Tambahkan role Admin
-    if (!await roleManager.RoleExistsAsync("Admin"))
-        await roleManager.CreateAsync(new IdentityRole("Admin"));
+    string[] roles = { "SuperAdmin", "Seeker", "Employer" };
 
-    // Tambahkan role Manager
-    if (!await roleManager.RoleExistsAsync("Manager"))
-        await roleManager.CreateAsync(new IdentityRole("Manager"));
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
 }
+
 
 app.MapControllerRoute(
     name: "default",

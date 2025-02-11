@@ -37,7 +37,7 @@
                                         <li><a>Submenu 2</a></li>
                                     </ul>
                                 </li>
-                                <li><a>PortalJob</li>
+                                <li>PortalJob</li>
                             </ul>
                         </div>
                         <a class="btn btn-ghost text-xl">Portal Job</a>
@@ -49,7 +49,16 @@
                     </div>
                     
                     <div>
-                        <a class="btn btn-sm bg-cyan-50">Login</a>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <form action="@Url.Action("Logout", "Account")" asp-controller="Account" method="post">
+                                <button type="submit" class="btn btn-sm bg-red-500 text-white">Logout</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Login", "Account")" class="btn btn-sm bg-cyan-50">Login</a>
+                        }
                     </div>
                 </div>
             </div>

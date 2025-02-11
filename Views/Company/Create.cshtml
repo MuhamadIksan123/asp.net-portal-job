@@ -1,0 +1,30 @@
+﻿@model PortalJob.Payload.Request.CompanyRequest
+
+@{
+    ViewData["Title"] = "Create Company";
+}
+
+<div class="container mx-auto mt-6">
+    <h1 class="text-2xl font-semibold">Create Company</h1>
+
+    <form method="post" enctype="multipart/form-data" action="@Url.Action("Store", "Company")">
+        <div class="mt-4">
+            <label for="Name" class="block text-sm font-medium">Company Name</label>
+            <input type="text" id="Name" name="Name" class="mt-1 block w-full rounded-md border px-4 py-2" value="@Model?.Name" required />
+        </div>
+
+        <div class="mt-4">
+            <label for="About" class="block text-sm font-medium">About Company</label>
+            <textarea id="About" name="About" class="mt-1 block w-full rounded-md border px-4 py-2">@Model?.About</textarea>
+        </div>
+
+        <div class="mt-4">
+            <label for="LogoFile" class="block text-sm font-medium">Company Logo</label>
+            <input type="file" id="LogoFile" name="LogoFile" class="mt-1 block w-full rounded-md border px-4 py-2" accept="image/*" required />
+        </div>
+
+        <div class="mt-6">
+            <button type="submit" class="rounded bg-blue-500 px-4 py-2 text-white">Create</button>
+        </div>
+    </form>
+</div>

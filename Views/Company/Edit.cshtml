@@ -1,0 +1,65 @@
+﻿@model PortalJob.Payload.Request.CompanyRequest
+
+@{
+    ViewData["Title"] = "Edit Company";
+}
+
+<div class="container mx-auto mt-6 max-w-lg">
+    <h1 class="mb-4 text-2xl font-semibold text-gray-800">Edit Company</h1>
+
+    <form method="post" enctype="multipart/form-data" action="@Url.Action("Update", "Company", new { id = ViewData["CompanyId"] })" class="rounded-lg bg-white p-6 shadow-md">
+        @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+        {
+            <div class="mb-4 rounded bg-red-500 p-3 text-white">
+                @ViewData["ErrorMessage"]
+            </div>
+        }
+
+        <!-- Input Company Name -->
+        <div class="mb-4">
+            <label for="Name" class="block text-sm font-medium text-gray-700">Company Name</label>
+            <input type="text" id="Name" name="Name" class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500" value="@Model.Name" required />
+            @if (ViewData.ModelState["Name"]?.Errors.Any() == true)
+            {
+                <span class="text-sm text-red-500">@ViewData.ModelState["Name"].Errors[0].ErrorMessage</span>
+            }
+        </div>
+
+        <!-- Input About -->
+        <div class="mb-4">
+            <label for="About" class="block text-sm font-medium text-gray-700">About Company</label>
+            <textarea id="About" name="About" class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2">@Model.About</textarea>
+            @if (ViewData.ModelState["About"]?.Errors.Any() == true)
+            {
+                <span class="text-sm text-red-500">@ViewData.ModelState["About"].Errors[0].ErrorMessage</span>
+            }
+        </div>
+
+        <!-- Tampilkan Gambar Lama Jika Ada -->
+        @if (ViewData["CurrentLogo"] != null && !string.IsNullOrEmpty(ViewData["CurrentLogo"].ToString()))
+        {
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Current Logo</label>
+                <img src="@ViewData["CurrentLogo"]" alt="Company Logo" class="mt-1 h-20 w-20 rounded border object-cover" />
+            </div>
+        }
+
+        <!-- Input Logo (Opsional) -->
+        <div class="mb-4">
+            <label for="LogoFile" class="block text-sm font-medium text-gray-700">Change Logo</label>
+            <input type="file" id="LogoFile" name="LogoFile" class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500" accept="image/*" />
+            <p class="text-sm text-gray-500">Leave empty to keep the current logo.</p>
+
+            @if (ViewData.ModelState["LogoFile"]?.Errors.Any() == true)
+            {
+                <span class="text-sm text-red-500">@ViewData.ModelState["LogoFile"].Errors[0].ErrorMessage</span>
+            }
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-6 flex items-center justify-between">
+            <a href="@Url.Action("Index", "Company")" class="text-gray-600 hover:text-gray-800">Back</a>
+            <button type="submit" class="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600">Update Company</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,35 @@
+﻿@model List<User>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>@string.Join(", ", await UserManager.GetRolesAsync(user))</td>
+                <td>
+                    <form asp-action="ChangeUserRole" method="post">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <select name="newRole" class="form-control">
+                            <option value="SuperAdmin">SuperAdmin</option>
+                            <option value="Seeker">Seeker</option>
+                            <option value="Employer">Employer</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Ubah Role</button>
+                    </form>
+                </td>
+            </tr>
+        }
+
+
+    </tbody>
+</table>

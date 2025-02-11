@@ -1,0 +1,32 @@
+﻿@model PortalJob.Models.Company
+
+@{
+    ViewData["Title"] = "Company Profile";
+}
+
+<div class="container mx-auto mt-6">
+    <h1 class="text-2xl font-semibold">Company Profile</h1>
+
+    @if (Model == null)
+    {
+        <div class="mt-4">
+            <p class="text-red-500">You don't have a company profile yet.</p>
+            <a href="@Url.Action("Create", "Company")" class="rounded bg-blue-500 px-4 py-2 text-white">Create Company</a>
+        </div>
+    }
+    else
+    {
+        <div class="mt-4 rounded border p-4 shadow">
+            <img src="@Model.Logo" alt="Company Logo" class="h-32 w-32 rounded">
+            <h2 class="text-xl font-bold">@Model.Name</h2>
+            <p class="text-gray-700">@Model.About</p>
+
+            <div class="mt-4">
+                <a href="@Url.Action("Edit", "Company", new { id = Model.Id })" class="rounded bg-yellow-500 px-4 py-2 text-white">Edit</a>
+                <form method="post" action="@Url.Action("Delete", "Company", new { id = Model.Id })" class="inline">
+                    <button type="submit" class="rounded bg-red-500 px-4 py-2 text-white" onclick="return confirm('Are you sure?');">Delete</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>

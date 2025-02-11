@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PortalJob.Models;
+using PortalJob.Services;
+using PortalJob.Payload.Request;
+using Microsoft.EntityFrameworkCore;
 
 namespace PortalJob.Controllers
 {
@@ -9,39 +12,65 @@ namespace PortalJob.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly FileService _fileService;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, FileService fileService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _fileService = fileService;
         }
 
         [HttpGet]
-        public IActionResult Register() => View();
+        public IActionResult Register()
+        {
+            return View(new RegisterRequest()); // Mengirim model kosong agar tidak null di view
+        }
 
         [HttpPost]
-        public async Task<IActionResult> Register(string username, string email, string password, string role, string avatar, string occupation, string experience)
+        public async Task<IActionResult> Register(RegisterRequest request)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var user = new User { UserName = username, Email = email, Avatar = avatar, Occupation = occupation, Experience = experience };
-                var result = await _userManager.CreateAsync(user, password);
-                if (result.Succeeded)
-                {
-                    if (!string.IsNullOrEmpty(role))
-                    {
-                        await _userManager.AddToRoleAsync(user, role);
-                    }
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Home", "User");
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                return View(request); // Tampilkan kembali form jika validasi gagal
             }
-            return View();
+
+            // Pastikan Avatar diunggah
+            if (request.AvatarFile == null || request.AvatarFile.Length == 0)
+            {
+                ModelState.AddModelError("AvatarFile", "Avatar wajib diunggah.");
+                return View(request);
+            }
+
+            // Upload avatar
+            string avatarPath = await _fileService.SaveFileAsync(request.AvatarFile, "avatars");
+
+            var user = new User
+            {
+                UserName = request.Email, // Username default menggunakan email
+                Email = request.Email,
+                Avatar = avatarPath,
+                Occupation = request.Occupation,
+                Experience = request.Experience,
+                FullName = request.FullName
+            };
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+            if (result.Succeeded)
+            {
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return RedirectToAction("Index", "Category");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(request);
         }
+
+
 
 
 
@@ -88,5 +117,36 @@ namespace PortalJob.Controllers
 
         [HttpGet]
         public IActionResult AccessDenied() => View();
+
+        [Authorize(Roles = "SuperAdmin")] // Hanya SuperAdmin yang bisa mengubah role
+        [HttpPost]
+        public async Task<IActionResult> ChangeUserRole(string userId, string newRole)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User tidak ditemukan.");
+            }
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, currentRoles); // Hapus role lama
+            var result = await _userManager.AddToRoleAsync(user, newRole); // Tambah role baru
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("ManageUsers"); // Redirect ke halaman manajemen pengguna
+            }
+
+            ModelState.AddModelError("", "Gagal mengubah role.");
+            return View();
+        }
+
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> ManageUsers()
+        {
+            var users = await _userManager.Users.ToListAsync();
+            return View(users);
+        }
+
     }
 }

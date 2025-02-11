@@ -76,10 +76,13 @@ namespace PortalJob.Controllers
             {
                 Name = company.Name,
                 About = company.About,
-                EmployerId = company.EmployerId
+                EmployerId = company.EmployerId,
             };
 
-            return View(model);
+            ViewData["CompanyId"] = id;
+            ViewData["CurrentLogo"] = company.Logo; // Simpan ikon lama
+
+            return View(model); // Pastikan model yang dikembalikan benar
         }
 
         [HttpPost]

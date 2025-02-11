@@ -17,7 +17,8 @@ namespace PortalJob.Data
         public DbSet<JobCandidate> JobCandidates { get; set; }
         public DbSet<JobResponsibility> JobResponsibilities { get; set; }
         public DbSet<JobQualification> JobQualifications { get; set; }
-        public DbSet<User> Users { get; set; }
+        public new DbSet<User> Users { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
