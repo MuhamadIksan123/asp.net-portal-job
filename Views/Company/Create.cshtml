@@ -4,27 +4,51 @@
     ViewData["Title"] = "Create Company";
 }
 
-<div class="container mx-auto mt-6">
-    <h1 class="text-2xl font-semibold">Create Company</h1>
+<div class="container mx-auto mt-6 max-w-lg">
+    <h1 class="mb-4 text-2xl font-semibold text-gray-800">Create New Company</h1>
 
-    <form method="post" enctype="multipart/form-data" action="@Url.Action("Store", "Company")">
-        <div class="mt-4">
-            <label for="Name" class="block text-sm font-medium">Company Name</label>
-            <input type="text" id="Name" name="Name" class="mt-1 block w-full rounded-md border px-4 py-2" value="@Model?.Name" required />
+    <form method="post" enctype="multipart/form-data" action="@Url.Action("Store", "Company")" class="rounded-lg bg-white p-6 shadow-md">
+        @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string))
+        {
+            <div class="mb-4 rounded bg-red-500 p-3 text-white">
+                @ViewData["ErrorMessage"]
+            </div>
+        }
+
+        <!-- Input Company Name -->
+        <div class="mb-4">
+            <label for="Name" class="block text-sm font-medium text-gray-700">Company Name</label>
+            <input type="text" id="Name" name="Name" class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500" value="@Model?.Name" />
+            @if (ViewData.ModelState["Name"]?.Errors.Any() == true)
+            {
+                <span class="text-sm text-red-500">@ViewData.ModelState["Name"].Errors[0].ErrorMessage</span>
+            }
         </div>
 
-        <div class="mt-4">
-            <label for="About" class="block text-sm font-medium">About Company</label>
-            <textarea id="About" name="About" class="mt-1 block w-full rounded-md border px-4 py-2">@Model?.About</textarea>
+        <!-- Input About Company -->
+        <div class="mb-4">
+            <label for="About" class="block text-sm font-medium text-gray-700">About Company</label>
+            <textarea id="About" name="About" class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500">@Model?.About</textarea>
+            @if (ViewData.ModelState["About"]?.Errors.Any() == true)
+            {
+                <span class="text-sm text-red-500">@ViewData.ModelState["About"].Errors[0].ErrorMessage</span>
+            }
         </div>
 
-        <div class="mt-4">
-            <label for="LogoFile" class="block text-sm font-medium">Company Logo</label>
-            <input type="file" id="LogoFile" name="LogoFile" class="mt-1 block w-full rounded-md border px-4 py-2" accept="image/*" required />
+        <!-- Input Company Logo -->
+        <div class="mb-4">
+            <label for="LogoFile" class="block text-sm font-medium text-gray-700">Company Logo</label>
+            <input type="file" id="LogoFile" name="LogoFile" class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500" accept="image/*"  />
+            @if (ViewData.ModelState["LogoFile"]?.Errors.Any() == true)
+            {
+                <span class="text-sm text-red-500">@ViewData.ModelState["LogoFile"].Errors[0].ErrorMessage</span>
+            }
         </div>
 
-        <div class="mt-6">
-            <button type="submit" class="rounded bg-blue-500 px-4 py-2 text-white">Create</button>
+        <!-- Submit Button -->
+        <div class="mt-6 flex items-center justify-between">
+            <a href="@Url.Action("Index", "Company")" class="text-gray-600 hover:text-gray-800">Back</a>
+            <button type="submit" class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">Create Company</button>
         </div>
     </form>
 </div>

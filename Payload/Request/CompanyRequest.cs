@@ -13,8 +13,5 @@ namespace PortalJob.Payload.Request
         [Required]
         [StringLength(300)]
         public string About { get; set; }
-
-        [Required]
-        public string EmployerId { get; set; }
     }
 }

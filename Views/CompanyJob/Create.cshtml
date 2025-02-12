@@ -1,0 +1,65 @@
+﻿@model PortalJob.Payload.Request.CompanyJobRequest
+
+@{
+    ViewData["Title"] = "Create Job";
+}
+
+<div class="container mx-auto mt-6 max-w-lg">
+    <h1 class="mb-4 text-2xl font-semibold text-gray-800">Create New Job</h1>
+
+    <form method="post" enctype="multipart/form-data" action="@Url.Action("Store", "CompanyJob")" class="rounded-lg bg-white p-6 shadow-md">
+        <!-- Job Name -->
+        <div class="mb-4">
+            <label for="Name" class="block text-sm font-medium text-gray-700">Job Name</label>
+            <input type="text" id="Name" name="Name"  class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+
+        <!-- Job Type -->
+        <div class="mb-4">
+            <label for="Type" class="block text-sm font-medium text-gray-700">Job Type</label>
+            <input type="text" id="Type" name="Type"  class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+
+        <!-- Skill Level -->
+        <div class="mb-4">
+            <label for="SkillLevel" class="block text-sm font-medium text-gray-700">Skill Level</label>
+            <input type="text" id="SkillLevel" name="SkillLevel"  class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+
+        <!-- Salary -->
+        <div class="mb-4">
+            <label for="Salary" class="block text-sm font-medium text-gray-700">Salary</label>
+            <input type="text" id="Salary" name="Salary"  class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+
+        <!-- Upload Thumbnail -->
+        <div class="mb-4">
+            <label for="ThumbnailFile" class="block text-sm font-medium text-gray-700">Upload Thumbnail</label>
+            <input type="file" id="ThumbnailFile" name="ThumbnailFile" accept="image/*" class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+
+        <!-- Job Responsibilities (Exactly 3) -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Job Responsibilities (3 )</label>
+            @for (int i = 0; i < 3; i++)
+            {
+                <input type="text" name="JobResponsibilities[]"  class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500" />
+            }
+        </div>
+
+        <!-- Job Qualifications (Exactly 3) -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Job Qualifications (3 )</label>
+            @for (int i = 0; i < 3; i++)
+            {
+                <input type="text" name="JobQualifications[]"  class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500" />
+            }
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-6 flex justify-between">
+            <a href="@Url.Action("Index", "CompanyJob")" class="text-gray-600 hover:text-gray-800">Back</a>
+            <button type="submit" class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">Create Job</button>
+        </div>
+    </form>
+</div>

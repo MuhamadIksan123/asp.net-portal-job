@@ -21,5 +21,7 @@ namespace PortalJob.Payload.Request
         public string Occupation { get; set; }
 
         public int Experience { get; set; }
+
+        public string Role { get; set; }
     }
 }

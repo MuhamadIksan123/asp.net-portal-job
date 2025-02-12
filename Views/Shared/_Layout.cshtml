@@ -13,7 +13,7 @@
         <header>
             <div class="navbar bg-primary text-primary-content">
 				<div class="container mx-auto flex justify-between">
-                    <div class="navbar-start flex">
+                    <div class="flex">
                         <div class="dropdown">
                             <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -43,9 +43,28 @@
                         <a class="btn btn-ghost text-xl">Portal Job</a>
                         <div class="hidden lg:flex">
                             <ul class="menu menu-horizontal px-1">
-                                <li><a>Home</a></li>
+                                <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+                                <li><a href="@Url.Action("Dashboard", "User")">Dashboard</a></li>
+
+                                @if (User.IsInRole("Seeker"))
+                                {
+                                    <li><a href="@Url.Action("Applications", "Index")">Applications</a></li>
+                                }
+                                else if (User.IsInRole("Employer"))
+                                {
+                                    <li><a href="@Url.Action("Index", "Company")">Company</a></li>
+                                    <li><a href="@Url.Action("Index", "CompanyJob")">Company Job</a></li>
+                                }
+                                else if (User.IsInRole("SuperAdmin"))
+                                {
+                                    <li><a href="@Url.Action("Index", "Category")">Category</a></li>
+                                    <li><a href="@Url.Action("Index", "Company")">Company</a></li>
+                                    <li><a href="@Url.Action("Index", "CompanyJob")">Company Job</a></li>
+                                    <li><a href="@Url.Action("Applications", "User")">Applications</a></li>
+                                }
                             </ul>
                         </div>
+
                     </div>
                     
                     <div>

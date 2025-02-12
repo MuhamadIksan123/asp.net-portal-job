@@ -32,7 +32,7 @@ namespace PortalJob.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(request); // Tampilkan kembali form jika validasi gagal
+                return View(request); // Jika validasi gagal, tampilkan form lagi
             }
 
             // Pastikan Avatar diunggah
@@ -58,6 +58,17 @@ namespace PortalJob.Controllers
             var result = await _userManager.CreateAsync(user, request.Password);
             if (result.Succeeded)
             {
+                // 🔹 Tambahkan role ke user baru (Pastikan role sudah dipilih)
+                if (!string.IsNullOrEmpty(request.Role))
+                {
+                    await _userManager.AddToRoleAsync(user, request.Role);
+                    Console.WriteLine($"Role {request.Role} berhasil ditambahkan ke {user.UserName}");
+                }
+                else
+                {
+                    Console.WriteLine("User tidak memiliki role.");
+                }
+
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToAction("Index", "Category");
             }
@@ -69,6 +80,7 @@ namespace PortalJob.Controllers
 
             return View(request);
         }
+
 
 
 
@@ -117,36 +129,6 @@ namespace PortalJob.Controllers
 
         [HttpGet]
         public IActionResult AccessDenied() => View();
-
-        [Authorize(Roles = "SuperAdmin")] // Hanya SuperAdmin yang bisa mengubah role
-        [HttpPost]
-        public async Task<IActionResult> ChangeUserRole(string userId, string newRole)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound("User tidak ditemukan.");
-            }
-
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, currentRoles); // Hapus role lama
-            var result = await _userManager.AddToRoleAsync(user, newRole); // Tambah role baru
-
-            if (result.Succeeded)
-            {
-                return RedirectToAction("ManageUsers"); // Redirect ke halaman manajemen pengguna
-            }
-
-            ModelState.AddModelError("", "Gagal mengubah role.");
-            return View();
-        }
-
-        [Authorize(Roles = "SuperAdmin")]
-        public async Task<IActionResult> ManageUsers()
-        {
-            var users = await _userManager.Users.ToListAsync();
-            return View(users);
-        }
 
     }
 }

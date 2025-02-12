@@ -41,30 +41,38 @@ namespace PortalJob.Controllers
         [HttpPost]
         public async Task<IActionResult> Store(CompanyRequest request)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var company = new Company
-                {
-                    Name = request.Name,
-                    About = request.About,
-                    EmployerId = request.EmployerId,
-                    Slug = request.Name.ToLower().Replace(" ", "-"),
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
-
-                // Proses Upload Logo jika ada
-                if (request.LogoFile != null)
-                {
-                    company.Logo = await _fileService.SaveFileAsync(request.LogoFile, "logos");
-                }
-
-                _context.Companies.Add(company);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return View("Create", request);
             }
 
-            return View("Create", request);
+            var employerId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Ambil EmployerId dari user login
+
+            if (string.IsNullOrEmpty(employerId))
+            {
+                ViewData["ErrorMessage"] = "User tidak terautentikasi.";
+                return View("Create", request);
+            }
+
+            var company = new Company
+            {
+                Name = request.Name,
+                About = request.About,
+                EmployerId = employerId, // Set EmployerId dari user yang login
+                Slug = request.Name.ToLower().Replace(" ", "-"),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            // Proses Upload Logo jika ada
+            if (request.LogoFile != null)
+            {
+                company.Logo = await _fileService.SaveFileAsync(request.LogoFile, "logos");
+            }
+
+            _context.Companies.Add(company);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -72,11 +80,11 @@ namespace PortalJob.Controllers
             var company = await _context.Companies.FindAsync(id);
             if (company == null) return NotFound();
 
+
             var model = new CompanyRequest
             {
                 Name = company.Name,
                 About = company.About,
-                EmployerId = company.EmployerId,
             };
 
             ViewData["CompanyId"] = id;
@@ -95,7 +103,6 @@ namespace PortalJob.Controllers
             {
                 company.Name = request.Name;
                 company.About = request.About;
-                company.EmployerId = request.EmployerId;
                 company.Slug = request.Name.ToLower().Replace(" ", "-");
                 company.UpdatedAt = DateTime.UtcNow;
 

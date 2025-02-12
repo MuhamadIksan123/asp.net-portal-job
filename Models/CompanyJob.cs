@@ -7,7 +7,7 @@
         public string Slug { get; set; }
         public string Type { get; set; }
         public string Location { get; set; }
-        public string SKilLevel { get; set; }
+        public string SkillLevel { get; set; }
         public string Salary { get; set; }
         public string Thumbnail { get; set; }
         public string About { get; set; }

@@ -5,16 +5,38 @@ namespace PortalJob.Payload.Request
     public class CompanyJobRequest
     {
         [Required]
-        [StringLength(100)]
         public string Name { get; set; }
 
-        public IFormFile? LogoFile { get; set; }
+        [Required]
+        public string Slug { get; set; }
 
         [Required]
-        [StringLength(300)]
+        public string Type { get; set; }
+
+        [Required]
+        public string Location { get; set; }
+
+        [Required]
+        public string SkillLevel { get; set; }
+
+        [Required]
+        public string Salary { get; set; }
+
+        public IFormFile ThumbnailFile { get; set; }
+
+        [Required]
         public string About { get; set; }
 
         [Required]
-        public string EmployerId { get; set; }
+        public bool IsOpen { get; set; }
+
+        [Required]
+        public int CompanyId { get; set; }
+
+        [Required]
+        public int CategoryId { get; set; }
+
+        public List<string> JobResponsibilities { get; set; } = new List<string>();
+        public List<string> JobQualifications { get; set; } = new List<string>();
     }
 }
